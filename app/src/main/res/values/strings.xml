@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">Weather App</string>
+
+    <string name="min">min</string>
+    <string name="current">Current</string>
+    <string name="max">max</string>
+    <string name="km">%1$skm</string>
+    <string name="unlimited">Unlimited</string>
+    <string name="missing_permissions">Missing Location permission</string>
+    <string name="feels_like">Feels like %1$s</string>
+</resources>
