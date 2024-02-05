@@ -58,6 +58,9 @@ android {
     kapt {
         correctErrorTypes = true
     }
+    lint {
+        disable += "Instantiatable"
+    }
 }
 
 dependencies {
