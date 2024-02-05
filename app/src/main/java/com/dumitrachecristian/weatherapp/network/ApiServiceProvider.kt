@@ -29,7 +29,7 @@ object ApiServiceProvider {
         val basicInterceptor = Interceptor { chain ->
             val original = chain.request()
 
-            val url: HttpUrl = original.url.newBuilder().addQueryParameter("appid", BuildConfig.API_KEY).build()
+            val url: HttpUrl = original.url.newBuilder().addQueryParameter("appid", BuildConfig.WEATHER_API_KEY).build()
 
             val newRequest = original
                 .newBuilder()

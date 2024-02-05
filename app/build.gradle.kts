@@ -1,9 +1,14 @@
+import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
+
 plugins {
     kotlin("kapt")
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("com.google.dagger.hilt.android")
 }
+
+val googleApiKey: String = gradleLocalProperties(rootDir).getProperty("google_api_key")
+val weatherApiKey: String = gradleLocalProperties(rootDir).getProperty("weather_api_key")
 
 android {
     namespace = "com.dumitrachecristian.weatherapp"
@@ -20,8 +25,9 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
-        buildConfigField("String", "API_KEY", "\"3dc9f2c169d629f4e6aaa166cc2dfeca\"")
-        buildConfigField("String", "PLACES_API_KEY", "")
+
+        buildConfigField("String", "WEATHER_API_KEY", weatherApiKey)
+        buildConfigField("String", "PLACES_API_KEY", googleApiKey)
     }
 
     buildTypes {
