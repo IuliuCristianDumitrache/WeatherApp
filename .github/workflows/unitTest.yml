@@ -22,6 +22,14 @@ jobs:
     - name: Grant execute permission for gradlew
       run: chmod +x ./gradlew
 
+    - name: Access API_KEYS
+      env:
+          GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
+          WEATHER_API_KEY: ${{ secrets.WEATHER_API_KEY }}
+
+      run: 
+        echo google_api_key=\"$GOOGLE_API_KEY\" > ./local.properties
+        echo weather_api_key=\"$WEATHER_API_KEY\" > ./local.properties
     - name: Build with Gradle
       run: ./gradlew build
 
