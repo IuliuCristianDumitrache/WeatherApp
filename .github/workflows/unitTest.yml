@@ -29,7 +29,7 @@ jobs:
           WEATHER_API_KEY: ${{ secrets.WEATHER_API_KEY }}
 
       run: 
-        echo google_api_key=\"$GOOGLE_API_KEY\" > ./local.properties ; echo weather_api_key=\"$WEATHER_API_KEY\" > ./local.properties
+        echo google_api_key=\"GOOGLE_API_KEY\" >> ./local.properties ; echo weather_api_key=\"WEATHER_API_KEY\" >> ./local.properties
         
     - name: Build with Gradle
       run: ./gradlew build
