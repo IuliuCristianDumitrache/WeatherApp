@@ -6,7 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
-import com.dumitrachecristian.weatherapp.MainViewModel
+import com.dumitrachecristian.weatherapp.ui.mainscreen.viewmodel.MainViewModel
 
 @Composable
 fun NavGraph(

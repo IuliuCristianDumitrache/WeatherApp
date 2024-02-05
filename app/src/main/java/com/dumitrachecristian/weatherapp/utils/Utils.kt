@@ -3,17 +3,17 @@ package com.dumitrachecristian.weatherapp.utils
 import android.content.Context
 import android.location.Address
 import android.location.Geocoder
-import android.location.Location
 import android.os.Build
 import androidx.compose.ui.graphics.Color
 import com.dumitrachecristian.weatherapp.R
+import com.dumitrachecristian.weatherapp.extensions.findMostFrequentString
 import com.dumitrachecristian.weatherapp.model.WeatherModelResponse
+import com.dumitrachecristian.weatherapp.model.uimodel.Forecast
 import com.dumitrachecristian.weatherapp.ui.theme.Cloudy
 import com.dumitrachecristian.weatherapp.ui.theme.Rainy
 import com.dumitrachecristian.weatherapp.ui.theme.Sunny
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.suspendCancellableCoroutine
-import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -30,8 +30,8 @@ class Utils @Inject constructor(@ApplicationContext private val context: Context
     private val CLEAR_CODE = 800..800
     private val CLOUDS_CODE = 801..804
 
-    fun getIconUrl(iconId: String?): String? {
-        if (iconId == null) {
+    private fun getIconUrl(iconId: String?): String? {
+        if (iconId.isNullOrEmpty()) {
             return null
         }
         return "https://openweathermap.org/img/wn/${iconId}.png"
@@ -49,7 +49,7 @@ class Utils @Inject constructor(@ApplicationContext private val context: Context
                 R.drawable.forest_rainy
             }
 
-            else -> null
+            else -> R.drawable.forest_cloudy
         }
     }
 
@@ -63,7 +63,7 @@ class Utils @Inject constructor(@ApplicationContext private val context: Context
 
     fun getMainColor(code: Int?): Color? {
         return when (code) {
-            in CLOUDS_CODE, in THUNDERSTORM_CODES, in ATMOSPHERE_CODE -> {
+            in CLOUDS_CODE, in THUNDERSTORM_CODES, in ATMOSPHERE_CODE, in SNOW_CODE  -> {
                 Cloudy
             }
             in CLEAR_CODE -> {
@@ -73,7 +73,7 @@ class Utils @Inject constructor(@ApplicationContext private val context: Context
                 Rainy
             }
 
-            else -> null
+            else -> Cloudy
         }
     }
 
@@ -132,15 +132,32 @@ class Utils @Inject constructor(@ApplicationContext private val context: Context
         }
     }
 
-//    fun formatForecastMedian(list: List<WeatherModelResponse>?): Any {
-//        if (list.isNullOrEmpty()) {
-//            return null
-//        }
-//        val hashMap = HashMap<String, T>()
-//        list.forEach { weather ->
-//            hashMap.getOrPut(getDayFromTimeMillis(weather.time))
-//        }
-//    }
+    fun formatForecastMedian(list: List<WeatherModelResponse>?): ArrayList<Forecast>? {
+        if (list.isNullOrEmpty()) {
+            return null
+        }
+        val dailyForecasts = arrayListOf<Forecast>()
+
+        val forecastMap = hashMapOf<String, ArrayList<WeatherModelResponse>>()
+
+        list.forEach { weather ->
+            val day = getDayFromTimeMillis(weather.time)
+            if (!forecastMap.containsKey(day)) {
+                forecastMap[day] = arrayListOf()
+            }
+            forecastMap[day]?.add(weather)
+        }
+        //  daily averages
+        for ((date, forecasts) in forecastMap) {
+            val averageTemperature = forecasts.map { it.weatherMain?.temperature!! }.average()
+            val averageIcon = forecasts.map {
+                it.getPrimaryWeatherCondition()?.icon ?: ""
+            }.findMostFrequentString()
+            dailyForecasts.add(Forecast(dateMillis = forecasts.firstOrNull()?.time, day = date, temperature = formatTemperature(averageTemperature.toInt()), icon = getIconUrl(averageIcon)))
+        }
+        dailyForecasts.sortBy { it.dateMillis ?: 0 }
+        return dailyForecasts
+    }
 
     data class T(
         val temperature: Double,

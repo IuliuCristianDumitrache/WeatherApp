@@ -8,7 +8,6 @@ sealed class Screen(
 ) {
     object MainScreen: Screen("main_screen")
     object SettingsScreen: Screen("settings_screen")
-    object ManageLocationsScreen: Screen("manage_locations_screen")
     fun withArgs(vararg args: String): String {
         return buildString {
             append(route)

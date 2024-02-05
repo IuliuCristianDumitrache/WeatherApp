@@ -8,4 +8,11 @@
     <string name="unlimited">Unlimited</string>
     <string name="missing_permissions">Missing Location permission</string>
     <string name="feels_like">Feels like %1$s</string>
+    <string name="units">Units</string>
+    <string name="metric">Metric</string>
+    <string name="imperial">Imperial</string>
+    <string name="menu_content_description">Menu</string>
+    <string name="favorite_content_description">Favorite</string>
+    <string name="current_location">Current location</string>
+    <string name="back">back</string>
 </resources>

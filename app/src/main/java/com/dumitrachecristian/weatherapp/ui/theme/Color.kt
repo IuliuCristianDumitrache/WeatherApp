@@ -14,3 +14,5 @@ val Pink40 = Color(0xFF7D5260)
 val Sunny = Color(0xFF47AB2f)
 val Cloudy = Color(0xFF54717A)
 val Rainy = Color(0xFF57575D)
+
+val BlackTransparent = Color(0x77000000)

@@ -1,7 +1,6 @@
-package com.dumitrachecristian.weatherapp
+package com.dumitrachecristian.weatherapp.ui.mainscreen
 
 import android.annotation.SuppressLint
-import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -20,9 +19,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -30,22 +28,17 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
-import androidx.compose.material3.SearchBar
-import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -53,60 +46,72 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
-import coil.compose.AsyncImage
+import com.dumitrachecristian.weatherapp.R
+import com.dumitrachecristian.weatherapp.model.uimodel.UiState
 import com.dumitrachecristian.weatherapp.navigation.Screen
+import com.dumitrachecristian.weatherapp.ui.components.search.SearchBarComponent
+import com.dumitrachecristian.weatherapp.ui.components.weather.CurrentWeatherInformationItem
+import com.dumitrachecristian.weatherapp.ui.components.weather.CurrentWeatherItem
+import com.dumitrachecristian.weatherapp.ui.components.weather.ForecastItem
+import com.dumitrachecristian.weatherapp.ui.mainscreen.viewmodel.MainViewModel
+import com.dumitrachecristian.weatherapp.ui.theme.BlackTransparent
+import com.dumitrachecristian.weatherapp.ui.theme.Rainy
+import com.dumitrachecristian.weatherapp.utils.network.ConnectionState
+import com.dumitrachecristian.weatherapp.utils.network.connectivityState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen(viewModel: MainViewModel, navController: NavHostController) {
     val permissionGranted by viewModel.permissionGranted.collectAsState()
+    val settingsUpdated by viewModel.settingsUpdated.collectAsState()
+
+    val connection by connectivityState()
+    val isConnected = connection == ConnectionState.Available
+
+    if (!isConnected) {
+        viewModel.getDataCurrentLocationDb()
+    }
+    if (settingsUpdated) {
+        LaunchedEffect(Unit) {
+            viewModel.setSettingsUpdated(false)
+            viewModel.getDataCurrentLocation()
+            viewModel.updateLocations()
+        }
+    }
+
     if (permissionGranted) {
         val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
         val scope = rememberCoroutineScope()
         ModalNavigationDrawer(
             drawerContent = {
                 ModalDrawerSheet {
-                    SearchBarComponent(drawerState, scope)
+                    SearchBarComponent(viewModel, drawerState, scope)
 
+                    val favoriteItems = viewModel.favoriteLocations.collectAsStateWithLifecycle()
                     LazyColumn() {
                         val modifier = Modifier
                             .padding(horizontal = 16.dp)
                             .padding(top = 8.dp)
-                        items(10) {
-                            FavouriteLocation(modifier)
+                        items(favoriteItems.value.size) { index ->
+                            FavouriteLocation(modifier, viewModel, favoriteItems.value[index]) {
+                                viewModel.setUiState(it)
+                                scope.launch {
+                                    drawerState.close()
+                                }
+                            }
                         }
                         item() {
-
-                            Button(
+                            Divider(
                                 modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(14.dp)
-                                    .align(Alignment.CenterHorizontally),
-                                onClick = {
-                                    navController.navigate(route = Screen.ManageLocationsScreen.route)
-                                    scope.launch {
-                                        drawerState.close()
-                                    }
-                                },
-                                shape = RoundedCornerShape(size = 10.dp),
-                                elevation = ButtonDefaults.elevatedButtonElevation(10.dp),
-                                colors = ButtonDefaults.buttonColors(
-                                    containerColor = Color.LightGray,
-                                    contentColor = Color.Black
-                                )
-                            ) {
-                                Text(text = "Manage Locations")
-                            }
-
-                            Divider(color = Color.Black, thickness = 1.dp)
+                                    .padding(top = 5.dp),
+                                color = Color.Black, thickness = 1.dp
+                            )
 
                             Button(
                                 modifier = Modifier
@@ -150,67 +155,6 @@ fun MainScreen(viewModel: MainViewModel, navController: NavHostController) {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun SearchBarComponent(drawerState: DrawerState, scope: CoroutineScope) {
-    var searchText by remember { mutableStateOf("") }
-    val searchActive = remember { mutableStateOf(false) }
-
-    SearchBar(modifier = Modifier
-        .padding(top = 18.dp)
-        .fillMaxWidth()
-        .padding(horizontal = if (searchActive.value) 0.dp else 14.dp),
-        tonalElevation = 10.dp,
-        shape = RoundedCornerShape(10.dp),
-        colors = SearchBarDefaults.colors(
-            containerColor = Color.LightGray, dividerColor = Color.Black,
-            inputFieldColors = SearchBarDefaults.inputFieldColors()
-        ),
-        query = searchText,
-        onQueryChange = {
-            searchText = it
-        },
-        onSearch = {
-            searchActive.value = false
-            scope.launch {
-                drawerState.close()
-            }
-        },
-        active = searchActive.value,
-        onActiveChange = {
-            searchActive.value = it
-        },
-        placeholder = {
-            Text(text = "Search for a city")
-        },
-        leadingIcon = {
-            if (searchActive.value) {
-                Icon(imageVector = Icons.Default.ArrowBack,
-                    contentDescription = "Back icon",
-                    modifier = Modifier
-                        .clickable {
-                            searchActive.value = false
-                        })
-            } else {
-                Icon(imageVector = Icons.Default.Menu, contentDescription = "Menu icon")
-            }
-        },
-        trailingIcon = {
-            if (searchActive.value) {
-                Icon(imageVector = Icons.Default.Search,
-                    contentDescription = "Search icon",
-                    modifier = Modifier.clickable {
-                        searchActive.value = false
-                        scope.launch {
-                            drawerState.close()
-                        }
-                    })
-            }
-        }) {
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreenPermissionGranted(
     modifier: Modifier = Modifier,
@@ -219,6 +163,7 @@ fun MainScreenPermissionGranted(
     scope: CoroutineScope
 ) {
     val weather by viewModel.uiState.collectAsStateWithLifecycle()
+    val forecast = viewModel.uiStateForecast
 
     Column(
         modifier = Modifier
@@ -244,7 +189,7 @@ fun MainScreenPermissionGranted(
 
         Divider(color = Color.White, thickness = 1.dp)
 
-        weather.forecast?.let { forecasts ->
+        forecast.let { forecasts ->
             LazyColumn {
                 items(forecasts.size) { index ->
                     ForecastItem(item = forecasts[index])
@@ -280,97 +225,78 @@ fun MainScreenPermissionGranted(
 }
 
 @Composable
-fun CurrentWeatherInformationItem(
-    modifier: Modifier = Modifier,
-    value: String?,
-    @DrawableRes drawableRes: Int
+private fun FavouriteLocation(
+    modifier: Modifier,
+    viewModel: MainViewModel,
+    uiState: UiState,
+    onClick: (UiState) -> Unit
 ) {
-    Column(modifier = modifier) {
-        Icon(
-            modifier = Modifier.align(Alignment.CenterHorizontally),
-            painter = painterResource(drawableRes),
-            contentDescription = null,
-            tint = Color.White
-        )
-
-        Text(
-            modifier = Modifier.align(Alignment.CenterHorizontally),
-            text = value ?: "",
-            color = Color.White,
-            fontSize = 20.sp
-        )
-    }
-}
-
-@Composable
-fun ForecastItem(item: Forecast) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 10.dp, horizontal = 20.dp),
-        horizontalArrangement = Arrangement.SpaceEvenly,
-    ) {
-        Text(
-            modifier = Modifier.weight(1f),
-            text = item.day,
-            color = Color.White,
-            fontSize = 20.sp
-        )
-        AsyncImage(
-            modifier = Modifier.size(30.dp),
-            model = item.icon,
-            contentDescription = null,
-        )
-        Text(
-            modifier = Modifier.weight(1f),
-            text = item.temperature ?: "",
-            color = Color.White,
-            fontSize = 20.sp,
-            textAlign = TextAlign.End
-        )
-    }
-}
-
-@Composable
-fun CurrentWeatherItem(temperature: String, label: String) {
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Text(
-            text = temperature,
-            color = Color.White,
-            fontWeight = FontWeight.Bold,
-            fontSize = 20.sp
-        )
-        Text(
-            text = label,
-            color = Color.White
-        )
-    }
-}
-
-@Composable
-private fun FavouriteLocation(modifier: Modifier) {
     Card(
-        colors = CardDefaults.cardColors(contentColor = Color.Blue),
+        colors = CardDefaults.cardColors(contentColor = Rainy),
         shape = RoundedCornerShape(10.dp),
         modifier = modifier
+            .height(100.dp)
+            .clickable {
+                onClick.invoke(uiState)
+            }
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(
-                text = "Today",
-                modifier = Modifier.align(Alignment.End),
-                color = Color.White
+        Box(modifier = Modifier.fillMaxSize()) {
+            uiState.backgroundImage?.let {
+                val painter = painterResource(it)
+                Image(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    painter = painter,
+                    contentDescription = "",
+                    contentScale = ContentScale.FillWidth
+                )
+            }
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(BlackTransparent),
             )
-            Spacer(modifier = Modifier.height(16.dp))
+            Row {
+                Column(
+                    modifier = Modifier
+                        .weight(0.8f)
+                        .padding(16.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = if (viewModel.isCurrentLocation(uiState.addressId)) {
+                            stringResource(R.string.current_location)
+                        } else {
+                            (uiState.address ?: "")
+                        },
+                        modifier = Modifier.align(Alignment.Start),
+                        color = Color.White
+                    )
+                    Text(
+                        text = uiState.temperature ?: "",
+                        modifier = Modifier.align(Alignment.Start),
+                        color = Color.White
+                    )
+                }
+
+                if (!viewModel.isCurrentLocation(uiState.addressId)) {
+                    Icon(
+                        imageVector = Icons.Default.Delete,
+                        tint = Color.White,
+                        contentDescription = "Remove icon",
+                        modifier = Modifier
+                            .weight(0.2f)
+                            .padding(16.dp)
+                            .clickable {
+                                viewModel.removeFromFavorite(uiState.addressId)
+                            }
+                    )
+                }
+            }
         }
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun TopSection(
     modifier: Modifier,
@@ -392,7 +318,7 @@ private fun TopSection(
 
         IconButton(
             modifier = Modifier
-                .padding(top = 10.dp, start = 10.dp),
+                .padding(top = 40.dp, start = 10.dp),
             onClick = {
                 scope.launch {
                     drawerState.open()
@@ -400,7 +326,7 @@ private fun TopSection(
             }) {
             Icon(
                 imageVector = Icons.Default.Menu,
-                contentDescription = "Menu",
+                contentDescription = stringResource(R.string.menu_content_description),
                 tint = Color.White
             )
         }
