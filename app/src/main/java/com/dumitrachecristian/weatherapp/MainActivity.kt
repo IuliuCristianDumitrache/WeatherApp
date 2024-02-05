@@ -13,6 +13,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.rememberNavController
 import com.dumitrachecristian.weatherapp.navigation.NavGraph
+import com.dumitrachecristian.weatherapp.ui.mainscreen.viewmodel.MainViewModel
 import com.dumitrachecristian.weatherapp.ui.theme.TestAppComposeTheme
 import dagger.hilt.android.AndroidEntryPoint
 

@@ -2,67 +2,97 @@ package com.dumitrachecristian.weatherapp.data
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
+import androidx.room.Index
 import androidx.room.PrimaryKey
-import com.dumitrachecristian.weatherapp.UiState
+import com.dumitrachecristian.weatherapp.model.Sys
+import com.dumitrachecristian.weatherapp.model.WeatherCondition
+import com.dumitrachecristian.weatherapp.model.WeatherMain
+import com.dumitrachecristian.weatherapp.model.WeatherModelResponse
+import com.dumitrachecristian.weatherapp.model.uimodel.UiState
 
-@Entity(tableName = "WEATHER_ENTITY")
+@Entity(
+    tableName = "WEATHER_ENTITY",
+    indices = [ Index(value = ["ADDRESS_ID"], unique = true) ],
+)
 data class WeatherEntity(
-    @PrimaryKey(autoGenerate = true)
-    val id: Long = 0,
+    @PrimaryKey(autoGenerate = false)
+    @ColumnInfo(name = "ADDRESS_ID")
+    var addressId: String = "",
 
-    @ColumnInfo(name = "TEMPERATURE")
-    val temperature: String = "",
-
-    @ColumnInfo(name = "FEELS_LIKE")
-    val feelsLike: String = "",
-
-    @ColumnInfo(name = "WEATHER_MAIN_DESCRIPTION")
-    val weatherMainDescription: String = "",
-
-    @ColumnInfo(name = "BACKGROUND_IMAGE")
-    val backgroundImage: Int = 0,
-
-//    @ColumnInfo(name = "MAIN_COLOR")
-    //   val mainColor: Color = 0,
-
-    @ColumnInfo(name = "MAX_TEMPERATURE")
-    val maxTemperature: String = "",
-
-    @ColumnInfo(name = "MIN_TEMPERATURE")
-    val minTemperature: String = "",
-
-    @ColumnInfo(name = "SUNRISE")
-    val sunrise: String = "",
+    @ColumnInfo(name = "LAST_UPDATED")
+    var lastUpdated: Long = 0,
 
     @ColumnInfo(name = "SUNSET")
-    val sunset: String = "",
+    val sunset: Long = 0,
+
+    @ColumnInfo(name = "SUNRISE")
+    val sunrise: Long = 0,
+
+    @ColumnInfo(name = "TIME")
+    val time: Long = 0,
 
     @ColumnInfo(name = "VISIBILITY")
-    val visibility: String = "",
+    val visibility: Int = 0,
+
+    @ColumnInfo(name = "TEMPERATURE")
+    val temperature: Double = 0.0,
+
+    @ColumnInfo(name = "FEELS_LIKE")
+    val feelsLike: Double = 0.0,
+
+    @ColumnInfo(name = "MAX_TEMPERATURE")
+    val maxTemperature: Double = 0.0,
+
+    @ColumnInfo(name = "MIN_TEMPERATURE")
+    val minTemperature: Double = 0.0,
+
+    @ColumnInfo(name = "LATITUDE")
+    var latitude: Double = 0.0,
+
+    @ColumnInfo(name = "LONGITUDE")
+    var longitude: Double = 0.0,
+
+    @ColumnInfo(name = "CONDITION_NAME")
+    val conditionName: String = "",
+
+    @ColumnInfo(name = "CONDITION_ICON")
+    val conditionIcon: String = "",
+
+    @ColumnInfo(name = "CONDITION_ID")
+    val conditionId: Int = 0,
 
     @ColumnInfo(name = "ADDRESS")
-    val address: String = "",
-
-    @ColumnInfo(name = "LAST_UPDATE")
-    val lastUpdateTime: String = "",
+    var address: String = "",
 
     // @ColumnInfo(name = "FORECAST")
     // val forecast: Forecast = "",
 )
 
-fun WeatherEntity.toUiState(): UiState {
-    return UiState(
-        temperature = temperature,
-        feelsLike = feelsLike,
-        weatherMainDescription = weatherMainDescription,
-        backgroundImage = backgroundImage,
-        mainColor = null,
-        minTemperature = minTemperature,
-        maxTemperature = maxTemperature,
-        sunrise = sunrise,
-        sunset = sunset,
-        visibility = visibility,
+fun WeatherEntity.toWeatherModelResponse(): WeatherModelResponse {
+    return WeatherModelResponse(
+        weatherConditions = arrayListOf(
+            WeatherCondition(
+                id = conditionId,
+                icon = conditionIcon,
+                main = conditionName
+            )
+        ),
+        weatherMain = WeatherMain(
+            temperature = this.temperature,
+            minTemperature = this.minTemperature,
+            maxTemperature = this.maxTemperature,
+            feelsLike = this.feelsLike
+        ),
+        visibility = this.visibility,
+        time = this.time,
+        sys = Sys(
+            sunrise = this.sunrise,
+            sunset = this.sunset
+        ),
+        lastUpdated = this.lastUpdated,
         address = address,
-        forecast = null
+        addressId = addressId,
+        latitude = latitude,
+        longitude = longitude
     )
 }

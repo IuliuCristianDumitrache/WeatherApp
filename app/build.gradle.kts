@@ -21,6 +21,7 @@ android {
             useSupportLibrary = true
         }
         buildConfigField("String", "API_KEY", "\"3dc9f2c169d629f4e6aaa166cc2dfeca\"")
+        buildConfigField("String", "PLACES_API_KEY", "")
     }
 
     buildTypes {
@@ -96,7 +97,7 @@ dependencies {
     implementation("androidx.security:security-crypto:1.0.0")
 
     // Room
-    annotationProcessor ("androidx.room:room-compiler:2.4.2")
+    kapt ("androidx.room:room-compiler:2.4.2")
     implementation ("androidx.room:room-ktx:2.4.2")
     implementation ("androidx.room:room-runtime:2.4.2")
 
@@ -109,5 +110,7 @@ dependencies {
     // Coil
     implementation("io.coil-kt:coil-compose:2.4.0")
 
+
+    implementation("com.google.android.libraries.places:places:3.3.0")
 
 }

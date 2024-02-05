@@ -5,10 +5,9 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
-import com.dumitrachecristian.weatherapp.MainScreen
-import com.dumitrachecristian.weatherapp.MainViewModel
-import com.dumitrachecristian.weatherapp.ui.ManageLocationsScreen
-import com.dumitrachecristian.weatherapp.ui.SettingsScreen
+import com.dumitrachecristian.weatherapp.ui.mainscreen.MainScreen
+import com.dumitrachecristian.weatherapp.ui.mainscreen.viewmodel.MainViewModel
+import com.dumitrachecristian.weatherapp.ui.settingsscreen.SettingsScreen
 
 fun NavGraphBuilder.mainNavGraph(
     navController: NavHostController,
@@ -25,13 +24,7 @@ fun NavGraphBuilder.mainNavGraph(
         composable(
             route = Screen.SettingsScreen.route
         ) {
-            SettingsScreen(navController = navController)
-        }
-
-        composable(
-            route = Screen.ManageLocationsScreen.route
-        ) {
-            ManageLocationsScreen(navController = navController)
+            SettingsScreen(navController = navController, viewModel = viewModel)
         }
     }
 }

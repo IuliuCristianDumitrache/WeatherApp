@@ -1,9 +1,9 @@
-package com.dumitrachecristian.weatherapp.repository
+package com.dumitrachecristian.weatherapp.data.datasource
 
 import com.dumitrachecristian.weatherapp.network.Result
 import retrofit2.Response
 
-interface BaseRepository {
+interface BaseRemoteDataSource {
 
     suspend fun <T : Any> safeApiResult(call: suspend () -> Response<T>): Result<T> {
         return try {

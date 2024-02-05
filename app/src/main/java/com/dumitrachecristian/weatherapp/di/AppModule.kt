@@ -3,9 +3,12 @@ package com.dumitrachecristian.weatherapp.di
 import android.app.Application
 import android.content.Context
 import android.content.SharedPreferences
+import androidx.room.Room
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKeys
+import com.dumitrachecristian.weatherapp.data.AppDatabase
 import com.dumitrachecristian.weatherapp.data.SessionManager
+import com.dumitrachecristian.weatherapp.data.WeatherEntityDao
 import com.dumitrachecristian.weatherapp.network.ApiService
 import com.dumitrachecristian.weatherapp.network.ApiServiceProvider
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -36,6 +39,19 @@ object AppModule {
     @Singleton
     fun provideFusedLocationProviderClient(application: Application): FusedLocationProviderClient {
         return LocationServices.getFusedLocationProviderClient(application)
+    }
+
+    @Provides
+    @Singleton
+    fun provideDatabase(
+        app: Application,
+    ) = Room.databaseBuilder(app, AppDatabase::class.java, "WEATHER_DB")
+        .fallbackToDestructiveMigration()
+        .build()
+
+    @Provides
+    fun provideModelDao(appDatabase: AppDatabase): WeatherEntityDao {
+        return appDatabase.weatherEntityDao()
     }
 
     private fun provideSharedPreferences(context: Context): SharedPreferences {
