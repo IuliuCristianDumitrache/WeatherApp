@@ -30,7 +30,7 @@ class Utils @Inject constructor(@ApplicationContext private val context: Context
     private val CLEAR_CODE = 800..800
     private val CLOUDS_CODE = 801..804
 
-    private fun getIconUrl(iconId: String?): String? {
+    fun getIconUrl(iconId: String?): String? {
         if (iconId.isNullOrEmpty()) {
             return null
         }
@@ -77,7 +77,7 @@ class Utils @Inject constructor(@ApplicationContext private val context: Context
         }
     }
 
-    fun getDayFromTimeMillis(time: Long?): String {
+    fun getDayFromTimeSeconds(time: Long?): String {
         if (time == null) {
             return ""
         }
@@ -87,7 +87,7 @@ class Utils @Inject constructor(@ApplicationContext private val context: Context
         return sdf.format(date)
     }
 
-    fun getTimeFromTimeMillis(time: Long?): String {
+    fun getTimeFromTimeSeconds(time: Long?): String {
         if (time == null) {
             return ""
         }
@@ -101,7 +101,7 @@ class Utils @Inject constructor(@ApplicationContext private val context: Context
         if (visibilityInMeters == null) {
             return ""
         }
-        if (visibilityInMeters == 10000) {
+        if (visibilityInMeters >= 10000) {
             return context.getString(R.string.unlimited)
         }
         return context.getString(R.string.km, (visibilityInMeters / 1000.toDouble()).toString())
@@ -141,7 +141,7 @@ class Utils @Inject constructor(@ApplicationContext private val context: Context
         val forecastMap = hashMapOf<String, ArrayList<WeatherModelResponse>>()
 
         list.forEach { weather ->
-            val day = getDayFromTimeMillis(weather.time)
+            val day = getDayFromTimeSeconds(weather.time)
             if (!forecastMap.containsKey(day)) {
                 forecastMap[day] = arrayListOf()
             }
