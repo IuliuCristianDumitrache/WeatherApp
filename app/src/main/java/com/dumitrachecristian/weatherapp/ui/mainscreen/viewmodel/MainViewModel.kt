@@ -17,6 +17,7 @@ import com.dumitrachecristian.weatherapp.repository.WeatherRepository
 import com.dumitrachecristian.weatherapp.utils.LocationService
 import com.dumitrachecristian.weatherapp.utils.PlacesService
 import com.dumitrachecristian.weatherapp.utils.Utils
+import com.dumitrachecristian.weatherapp.utils.Utils.Companion.CURRENT_LOCATION
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -76,15 +77,15 @@ class MainViewModel @Inject constructor(
     fun getDataCurrentLocation() {
         viewModelScope.launch {
             locationService.getCurrentLocation()?.let { location ->
-                getCurrentWeather(location.latitude, location.longitude)
+                getCurrentWeather(location.latitude, location.longitude, CURRENT_LOCATION)
                 getForecast(location.latitude, location.longitude)
             }
         }
     }
 
-    fun getDataForLocation(latitude: Double, longitude: Double) {
+    fun getDataForLocation(latitude: Double, longitude: Double, addressId: String) {
         viewModelScope.launch {
-            getCurrentWeather(latitude, longitude)
+            getCurrentWeather(latitude, longitude, addressId)
             getForecast(latitude, longitude)
         }
     }
@@ -114,7 +115,7 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    fun getCurrentWeather(latitude: Double, longitude: Double) {
+    fun getCurrentWeather(latitude: Double, longitude: Double, addressId: String) {
         viewModelScope.launch {
             when (val result = repository.getCurrentWeather(latitude, longitude)) {
                 is Result.Success -> {
@@ -124,7 +125,7 @@ class MainViewModel @Inject constructor(
 
                         val weatherEntity = response.toWeatherEntity().apply {
                             lastUpdated = System.currentTimeMillis()
-                            addressId = CURRENT_LOCATION
+                            this.addressId = addressId
                             this.address = address?.locality ?: address?.subAdminArea ?: ""
                             this.latitude = latitude
                             this.longitude = longitude
@@ -165,7 +166,8 @@ class MainViewModel @Inject constructor(
             address = address,
             addressId = response.addressId,
             latitude = response.latitude,
-            longitude = response.longitude
+            longitude = response.longitude,
+            time = response.time
         )
     }
 
@@ -276,7 +278,6 @@ class MainViewModel @Inject constructor(
                                 address = weatherEntity.address
                                 latitude = weatherEntity.latitude
                                 longitude = weatherEntity.longitude
-
                             }
                             repository.insertWeather(newWeatherEntity)
                         }
@@ -302,7 +303,7 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    companion object {
-        const val CURRENT_LOCATION = "CURRENT_LOCATION"
+    fun getLastUpdatedTime(time: Long?): String {
+        return utils.getDateTimeFromTimeSeconds(time)
     }
 }

@@ -16,5 +16,6 @@ data class UiState(
     val address: String? = null,
     val addressId: String? = null,
     var latitude: Double? = null,
-    var longitude: Double? = null
+    var longitude: Double? = null,
+    val time: Long? = null
 )

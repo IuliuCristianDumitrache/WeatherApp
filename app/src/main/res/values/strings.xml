@@ -17,4 +17,9 @@
     <string name="back">back</string>
     <string name="settings">Settings</string>
     <string name="map_location">Map Location</string>
+    <string name="permission_needed_for_widget">Permission Needed for Widget!</string>
+    <string name="background_location_permission_needed_tap_allow_all_time_in_the_next_screen">Background Location Permission Needed, tap \"Allow all time in the next screen\"</string>
+    <string name="ok">OK</string>
+    <string name="cancel">CANCEL</string>
+    <string name="last_updated">Last Updated: %1$s</string>
 </resources>

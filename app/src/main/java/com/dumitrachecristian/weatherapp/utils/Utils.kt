@@ -97,6 +97,16 @@ class Utils @Inject constructor(@ApplicationContext private val context: Context
         return sdf.format(date)
     }
 
+    fun getDateTimeFromTimeSeconds(time: Long?): String {
+        if (time == null) {
+            return ""
+        }
+        val sdf = SimpleDateFormat("MM-dd-HH:mm", Locale.getDefault())
+        val date = Date()
+        date.time = time * 1000
+        return sdf.format(date)
+    }
+
     fun formatVisibilityInKm(visibilityInMeters: Int?): String {
         if (visibilityInMeters == null) {
             return ""
@@ -163,4 +173,15 @@ class Utils @Inject constructor(@ApplicationContext private val context: Context
         val temperature: Double,
         val iconId: Int
     )
+
+    companion object {
+        const val CURRENT_LOCATION = "CURRENT_LOCATION"
+
+        fun getLocationPermissions(): Array<String> {
+            return arrayOf(
+                android.Manifest.permission.ACCESS_FINE_LOCATION,
+                android.Manifest.permission.ACCESS_COARSE_LOCATION
+            )
+        }
+    }
 }

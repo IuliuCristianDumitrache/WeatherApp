@@ -47,7 +47,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
@@ -80,11 +79,13 @@ fun MainScreen(viewModel: MainViewModel, navController: NavHostController) {
     if (!isConnected) {
         viewModel.getDataCurrentLocationDb()
     }
+    LaunchedEffect(Unit) {
+        viewModel.updateLocations()
+    }
     if (settingsUpdated) {
         LaunchedEffect(Unit) {
             viewModel.setSettingsUpdated(false)
             viewModel.getDataCurrentLocation()
-            viewModel.updateLocations()
         }
     }
 
@@ -170,7 +171,7 @@ fun MainScreen(viewModel: MainViewModel, navController: NavHostController) {
             )
         }
     } else {
-        Box {
+        Box(modifier = Modifier.fillMaxSize()) {
             Text(
                 modifier = Modifier.align(Alignment.Center),
                 text = stringResource(R.string.missing_permissions)
@@ -197,7 +198,7 @@ fun MainScreenPermissionGranted(
     ) {
 
         weather.backgroundImage?.let {
-            TopSection(modifier, it, weather, drawerState, scope)
+            TopSection(modifier, it, weather, drawerState, scope, viewModel)
         }
 
         Row(
@@ -356,7 +357,8 @@ private fun TopSection(
     it: Int,
     weather: UiState,
     drawerState: DrawerState,
-    scope: CoroutineScope
+    scope: CoroutineScope,
+    viewModel: MainViewModel
 ) {
     Box(modifier.fillMaxWidth()) {
         val painter = painterResource(it)
@@ -383,6 +385,15 @@ private fun TopSection(
                 tint = Color.White
             )
         }
+
+        Text(
+            modifier = Modifier
+                .padding(bottom = 10.dp, end = 10.dp)
+                .align(Alignment.BottomEnd),
+            text = stringResource(R.string.last_updated, viewModel.getLastUpdatedTime(weather.time)),
+            color = Color.White,
+            style = Typography.labelSmall
+        )
 
         Column(
             modifier = modifier
