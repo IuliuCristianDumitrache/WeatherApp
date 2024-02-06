@@ -14,6 +14,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.dumitrachecristian.weatherapp.model.uimodel.Forecast
+import com.dumitrachecristian.weatherapp.ui.theme.Typography
 
 @Composable
 fun ForecastItem(item: Forecast) {
@@ -27,8 +28,8 @@ fun ForecastItem(item: Forecast) {
             modifier = Modifier.weight(1f),
             text = item.day,
             color = Color.White,
-            fontSize = 20.sp
-        )
+            style = Typography.titleLarge
+            )
         AsyncImage(
             modifier = Modifier.size(30.dp),
             model = item.icon,
@@ -38,7 +39,7 @@ fun ForecastItem(item: Forecast) {
             modifier = Modifier.weight(1f),
             text = item.temperature ?: "",
             color = Color.White,
-            fontSize = 20.sp,
+            style = Typography.titleLarge,
             textAlign = TextAlign.End
         )
     }

@@ -15,4 +15,6 @@
     <string name="favorite_content_description">Favorite</string>
     <string name="current_location">Current location</string>
     <string name="back">back</string>
+    <string name="settings">Settings</string>
+    <string name="map_location">Map Location</string>
 </resources>

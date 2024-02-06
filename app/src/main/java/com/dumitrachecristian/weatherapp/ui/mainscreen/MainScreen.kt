@@ -48,6 +48,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import com.dumitrachecristian.weatherapp.R
@@ -59,7 +60,9 @@ import com.dumitrachecristian.weatherapp.ui.components.weather.CurrentWeatherIte
 import com.dumitrachecristian.weatherapp.ui.components.weather.ForecastItem
 import com.dumitrachecristian.weatherapp.ui.mainscreen.viewmodel.MainViewModel
 import com.dumitrachecristian.weatherapp.ui.theme.BlackTransparent
+import com.dumitrachecristian.weatherapp.ui.theme.Cloudy
 import com.dumitrachecristian.weatherapp.ui.theme.Rainy
+import com.dumitrachecristian.weatherapp.ui.theme.Typography
 import com.dumitrachecristian.weatherapp.utils.network.ConnectionState
 import com.dumitrachecristian.weatherapp.utils.network.connectivityState
 import kotlinx.coroutines.CoroutineScope
@@ -107,10 +110,31 @@ fun MainScreen(viewModel: MainViewModel, navController: NavHostController) {
                             }
                         }
                         item() {
+                            Button(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(14.dp)
+                                    .align(Alignment.CenterHorizontally),
+                                onClick = {
+                                    navController.navigate(route = Screen.MapsScreen.route)
+                                    scope.launch {
+                                        drawerState.close()
+                                    }
+                                },
+                                shape = RoundedCornerShape(size = 10.dp),
+                                elevation = ButtonDefaults.elevatedButtonElevation(10.dp),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = Rainy,
+                                    contentColor = Color.White
+                                )
+                            ) {
+                                Text(text = stringResource(R.string.map_location))
+                            }
+
                             Divider(
                                 modifier = Modifier
                                     .padding(top = 5.dp),
-                                color = Color.Black, thickness = 1.dp
+                                color = Cloudy, thickness = 1.dp
                             )
 
                             Button(
@@ -127,11 +151,11 @@ fun MainScreen(viewModel: MainViewModel, navController: NavHostController) {
                                 shape = RoundedCornerShape(size = 10.dp),
                                 elevation = ButtonDefaults.elevatedButtonElevation(10.dp),
                                 colors = ButtonDefaults.buttonColors(
-                                    containerColor = Color.LightGray,
-                                    contentColor = Color.Black
+                                    containerColor = Rainy,
+                                    contentColor = Color.White
                                 )
                             ) {
-                                Text(text = "Settings")
+                                Text(text = stringResource(R.string.settings))
                             }
                         }
                     }
@@ -235,7 +259,7 @@ private fun FavouriteLocation(
         colors = CardDefaults.cardColors(contentColor = Rainy),
         shape = RoundedCornerShape(10.dp),
         modifier = modifier
-            .height(100.dp)
+            .height(110.dp)
             .clickable {
                 onClick.invoke(uiState)
             }
@@ -261,7 +285,8 @@ private fun FavouriteLocation(
                     modifier = Modifier
                         .weight(0.8f)
                         .padding(16.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
                 ) {
                     Text(
                         text = if (viewModel.isCurrentLocation(uiState.addressId)) {
@@ -272,11 +297,39 @@ private fun FavouriteLocation(
                         modifier = Modifier.align(Alignment.Start),
                         color = Color.White
                     )
-                    Text(
-                        text = uiState.temperature ?: "",
-                        modifier = Modifier.align(Alignment.Start),
-                        color = Color.White
-                    )
+                    ConstraintLayout(
+                        modifier =
+                        Modifier.fillMaxWidth()
+                    ) {
+                        val (weather, temperature) = createRefs()
+                        Text(
+                            modifier = Modifier
+                                .constrainAs(weather) {
+                                    top.linkTo(parent.top)
+                                    bottom.linkTo(parent.bottom)
+                                    start.linkTo(parent.start)
+                                }
+                                .padding(5.dp),
+                            text = uiState.weatherMainDescription ?: "",
+                            color = Color.White,
+                            style = Typography.titleLarge.copy(fontWeight = FontWeight.Bold)
+                        )
+
+                        Text(
+                            modifier = Modifier
+                                .constrainAs(temperature) {
+                                    top.linkTo(parent.top)
+                                    bottom.linkTo(parent.bottom)
+                                    end.linkTo(parent.end)
+                                }
+                                .padding(5.dp),
+                            text = uiState.temperature ?: "",
+                            color = Color.White,
+                            style = Typography.titleLarge.copy(fontWeight = FontWeight.Bold)
+                        )
+
+                    }
+
                 }
 
                 if (!viewModel.isCurrentLocation(uiState.addressId)) {
@@ -341,26 +394,25 @@ private fun TopSection(
                 text = weather.temperature ?: "",
                 modifier = Modifier.align(Alignment.CenterHorizontally),
                 color = Color.White,
-                fontSize = 60.sp,
-                fontWeight = FontWeight.Bold
+                style = Typography.headlineLarge
             )
             Text(
                 text = weather.feelsLike ?: "",
                 modifier = Modifier.align(Alignment.CenterHorizontally),
                 color = Color.White,
-                fontSize = 20.sp
+                style = Typography.titleLarge
             )
             Text(
                 text = weather.weatherMainDescription?.uppercase() ?: "",
                 modifier = Modifier.align(Alignment.CenterHorizontally),
                 color = Color.White,
-                fontSize = 35.sp
+                style = Typography.headlineMedium
             )
             Text(
                 text = weather.address ?: "",
                 modifier = Modifier.align(Alignment.CenterHorizontally),
                 color = Color.White,
-                fontSize = 20.sp
+                style = Typography.titleLarge
             )
         }
     }

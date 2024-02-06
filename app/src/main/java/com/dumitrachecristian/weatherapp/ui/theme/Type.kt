@@ -10,14 +10,14 @@ import androidx.compose.ui.unit.sp
 val Typography = Typography(
     headlineLarge = TextStyle(
         fontWeight = FontWeight.Bold,
-        fontSize = 32.sp,
-        lineHeight = 32.sp,
+        fontSize = 52.sp,
+        lineHeight = 52.sp,
         letterSpacing = 0.sp
     ),
     headlineMedium = TextStyle(
         fontWeight = FontWeight.Medium,
-        fontSize = 24.sp,
-        lineHeight = 24.sp,
+        fontSize = 35.sp,
+        lineHeight = 30.sp,
         letterSpacing = 0.sp
     ),
     headlineSmall = TextStyle(

@@ -10,6 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.sp
+import com.dumitrachecristian.weatherapp.ui.theme.Typography
 
 @Composable
 fun CurrentWeatherInformationItem(
@@ -29,7 +30,7 @@ fun CurrentWeatherInformationItem(
             modifier = Modifier.align(Alignment.CenterHorizontally),
             text = value ?: "",
             color = Color.White,
-            fontSize = 20.sp
-        )
+            style = Typography.titleLarge,
+            )
     }
 }
