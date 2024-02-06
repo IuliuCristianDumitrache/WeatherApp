@@ -32,6 +32,9 @@ android {
     }
 
     buildTypes {
+        debug {
+            enableUnitTestCoverage = true
+        }
         release {
             isMinifyEnabled = false
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
@@ -127,4 +130,5 @@ dependencies {
     // Constraint Layout
     implementation("androidx.constraintlayout:constraintlayout-compose:1.0.1")
 
+    testImplementation("io.mockk:mockk:1.13.9")
 }
