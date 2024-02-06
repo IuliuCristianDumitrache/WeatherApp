@@ -7,6 +7,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import com.dumitrachecristian.weatherapp.ui.mainscreen.MainScreen
 import com.dumitrachecristian.weatherapp.ui.mainscreen.viewmodel.MainViewModel
+import com.dumitrachecristian.weatherapp.ui.mapscreen.MapsScreen
 import com.dumitrachecristian.weatherapp.ui.settingsscreen.SettingsScreen
 
 fun NavGraphBuilder.mainNavGraph(
@@ -25,6 +26,12 @@ fun NavGraphBuilder.mainNavGraph(
             route = Screen.SettingsScreen.route
         ) {
             SettingsScreen(navController = navController, viewModel = viewModel)
+        }
+
+        composable(
+            route = Screen.MapsScreen.route
+        ) {
+            MapsScreen(navController = navController, viewModel = viewModel)
         }
     }
 }

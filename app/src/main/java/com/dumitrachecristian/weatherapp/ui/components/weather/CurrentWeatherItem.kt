@@ -7,6 +7,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
+import com.dumitrachecristian.weatherapp.ui.theme.Typography
 
 @Composable
 fun CurrentWeatherItem(temperature: String, label: String) {
@@ -14,9 +15,8 @@ fun CurrentWeatherItem(temperature: String, label: String) {
         Text(
             text = temperature,
             color = Color.White,
-            fontWeight = FontWeight.Bold,
-            fontSize = 20.sp
-        )
+            style = Typography.titleLarge.copy(fontWeight = FontWeight.Bold)
+            )
         Text(
             text = label,
             color = Color.White

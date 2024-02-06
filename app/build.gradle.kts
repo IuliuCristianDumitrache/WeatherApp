@@ -28,6 +28,7 @@ android {
 
         buildConfigField("String", "WEATHER_API_KEY", weatherApiKey)
         buildConfigField("String", "PLACES_API_KEY", googleApiKey)
+        manifestPlaceholders["googleApiKey"] = "$googleApiKey"
     }
 
     buildTypes {
@@ -103,7 +104,7 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.7.0")
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.7.0")
 
-    implementation("androidx.security:security-crypto:1.0.0")
+    implementation("androidx.security:security-crypto:1.0.0-alpha01")
 
     // Room
     kapt ("androidx.room:room-compiler:2.4.2")
@@ -119,7 +120,11 @@ dependencies {
     // Coil
     implementation("io.coil-kt:coil-compose:2.4.0")
 
-
+    // Android Maps Compose composables for the Maps SDK for Android
+    implementation("com.google.maps.android:maps-compose:4.3.0")
     implementation("com.google.android.libraries.places:places:3.3.0")
+
+    // Constraint Layout
+    implementation("androidx.constraintlayout:constraintlayout-compose:1.0.1")
 
 }
