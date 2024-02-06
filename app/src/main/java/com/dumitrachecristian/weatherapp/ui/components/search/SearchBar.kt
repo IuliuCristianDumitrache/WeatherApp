@@ -92,7 +92,7 @@ fun SearchBarComponent(viewModel: MainViewModel, drawerState: DrawerState, scope
                         scope.launch {
                             drawerState.close()
                         }
-                        viewModel.getDataForLocation(searchResult.latitude, searchResult.longitude)
+                        viewModel.getDataForLocation(searchResult.latitude, searchResult.longitude, searchResult.id)
                     }
                 )
             }

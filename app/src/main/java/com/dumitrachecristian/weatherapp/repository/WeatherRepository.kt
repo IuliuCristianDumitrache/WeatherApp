@@ -35,6 +35,10 @@ class WeatherRepository @Inject constructor(
         return weatherLocalDataSource.getFavoriteLocations()
     }
 
+    suspend fun getCurrentLocationFromDb(): WeatherEntity {
+        return weatherLocalDataSource.getCurrentLocation()
+    }
+
     suspend fun getFavoriteLocationsSuspend(): List<WeatherEntity> {
         return weatherLocalDataSource.getFavoriteLocationsSuspend()
     }

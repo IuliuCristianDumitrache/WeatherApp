@@ -28,7 +28,8 @@ android {
 
         buildConfigField("String", "WEATHER_API_KEY", weatherApiKey)
         buildConfigField("String", "PLACES_API_KEY", googleApiKey)
-        manifestPlaceholders["googleApiKey"] = "$googleApiKey"
+        manifestPlaceholders["googleApiKey"] = googleApiKey.replace("\"", "")
+
     }
 
     buildTypes {
@@ -99,6 +100,11 @@ dependencies {
     implementation("com.google.dagger:hilt-android:2.44")
     implementation("androidx.hilt:hilt-navigation-compose:1.1.0")
     kapt("com.google.dagger:hilt-android-compiler:2.44")
+    implementation("androidx.hilt:hilt-work:1.1.0")
+    kapt("androidx.hilt:hilt-compiler:1.1.0")
+
+    // WorkManager
+    implementation("androidx.work:work-runtime-ktx:2.9.0")
 
 
     // ViewModel
@@ -107,7 +113,7 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.7.0")
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.7.0")
 
-    implementation("androidx.security:security-crypto:1.0.0-alpha01")
+    implementation("androidx.security:security-crypto-ktx:1.1.0-alpha06")
 
     // Room
     kapt ("androidx.room:room-compiler:2.4.2")
