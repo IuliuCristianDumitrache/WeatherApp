@@ -1,4 +1,4 @@
-# Weather ReadMe
+# WeatherApp
 
 WeatherApp provides users with real-time weather information for their current location as well as any other location they choose. Users can create a widget for quick access, save favorite locations, or view them on a map.
 
